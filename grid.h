@@ -29,19 +29,24 @@ class Grid {
     //      Step 1. Draw a circle.
     //      Step 2. Draw the rest of the owl.
 private:
-    unsigned int width;
-    unsigned int height;
-    char * grid;
+    int width;
+    int height;
+    char* grid;
+    int get_index(int x, int y);
 public:
     Grid();
-    explicit Grid(unsigned int square_size);
-    Grid(unsigned int width, unsigned int height);
+    explicit Grid(int square_size);
+    Grid(int width, int height);
     ~Grid() = default;
 
-    unsigned int get_width();
-    unsigned int get_height();
-    unsigned int get_total_cells();
-    unsigned int get_alive_cells();
-
-    unsigned int get_dead_cells();
+    int get_width();
+    int get_height();
+    int get_total_cells();
+    int get_alive_cells();
+    int get_dead_cells();
+    void resize(int square_size);
+    void resize(int new_width, int new_height);
+    char* operator()(int x, int y);
+    void set(int x, int y, Cell value);
+    Cell get(int x, int y);
 };

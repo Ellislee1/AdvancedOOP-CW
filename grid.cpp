@@ -12,6 +12,7 @@
  * @date March, 2020
  */
 #include <iostream>
+#include <cstring>
 #include "grid.h"
 
 // Include the minimal number of headers needed to support your implementation.
@@ -54,7 +55,7 @@ Grid::Grid() : Grid(0){}
  * @param square_size
  *      The edge size to use for the width and height of the grid.
  */
-Grid::Grid(unsigned int square_size): Grid(square_size,square_size){}
+Grid::Grid(int square_size): Grid(square_size,square_size){}
 
 /**
  * Grid::Grid(width, height)
@@ -72,10 +73,10 @@ Grid::Grid(unsigned int square_size): Grid(square_size,square_size){}
  * @param height
  *      The height of the grid.
  */
-Grid::Grid(unsigned int width, unsigned int height) {
+Grid::Grid(int width, int height) {
     this->width = width;
     this->height = height;
-    unsigned int size = width*height;
+    int size = width*height;
     this->grid = new char[size];
 
     if (size > 0) {
@@ -84,7 +85,6 @@ Grid::Grid(unsigned int width, unsigned int height) {
         }
     }
 }
-
 
 /**
  * Grid::get_width()
@@ -109,7 +109,7 @@ Grid::Grid(unsigned int width, unsigned int height) {
  * @return
  *      The width of the grid.
  */
-unsigned int Grid::get_width(){
+int Grid::get_width(){
     return this->width;
 }
 
@@ -137,7 +137,7 @@ unsigned int Grid::get_width(){
  * @return
  *      The height of the grid.
  */
-unsigned int Grid::get_height(){
+int Grid::get_height(){
     return this->height;
 }
 
@@ -164,8 +164,8 @@ unsigned int Grid::get_height(){
  * @return
  *      The number of total cells.
  */
- unsigned int Grid::get_total_cells(){
-     unsigned int size = width * height;
+ int Grid::get_total_cells(){
+     int size = width * height;
      return size;
  }
 
@@ -193,9 +193,9 @@ unsigned int Grid::get_height(){
  * @return
  *      The number of alive cells.
  */
- unsigned int Grid::get_alive_cells(){
-     unsigned int size = width * height;
-     unsigned int no_alive = 0;
+ int Grid::get_alive_cells(){
+     int size = width * height;
+     int no_alive = 0;
 
      for (int i = 0; i < size; i++){
          if (grid[i] == Cell::ALIVE){
@@ -230,9 +230,9 @@ unsigned int Grid::get_height(){
  * @return
  *      The number of dead cells.
  */
-unsigned int Grid::get_dead_cells(){
-    unsigned int size = width * height;
-    unsigned int no_dead = 0;
+int Grid::get_dead_cells(){
+    int size = width * height;
+    int no_dead = 0;
 
     for (int i = 0; i < size; i++){
         if (grid[i] == Cell::DEAD){
@@ -260,10 +260,12 @@ unsigned int Grid::get_dead_cells(){
  * @param square_size
  *      The new edge size for both the width and height of the grid.
  */
-
+void Grid::resize(int square_size){
+    resize(square_size,square_size);
+}
 
 /**
- * Grid::resize(width, height)
+ * Grid::resize(new_width, new_height)
  *
  * Resize the current grid to a new width and height. The content of the grid
  * should be preserved within the kept region and padded with Grid::DEAD if new cells are added.
@@ -282,6 +284,26 @@ unsigned int Grid::get_dead_cells(){
  * @param new_height
  *      The new height for the grid.
  */
+void Grid::resize(int new_width, int new_height){
+    if(new_width == this->width && new_height == this->height){
+        return;
+    }
+    Grid *new_grid = new Grid(new_width,new_height);
+    int x_padding = width - this->width;
+    int size = new_width * new_height;
+    int multiplier = 0;
+    for (int i = 0; i < this->height; i++) {
+        for (int j = 0; j < this->width; ++j) {
+            if (this->get(i,j) == Cell::ALIVE){
+                new_grid->set(i+(x_padding * multiplier), j, Cell::ALIVE);
+            }
+        }
+        multiplier++;
+    }
+    this->width = new_width;
+    this->height = new_height;
+    memcpy(this->grid, new_grid->grid, size*sizeof(char));
+}
 
 
 /**
@@ -300,6 +322,10 @@ unsigned int Grid::get_dead_cells(){
  * @return
  *      The 1d offset from the start of the data array where the desired cell is located.
  */
+int Grid::get_index(int x, int y){
+    int y_offset = y * this->width;
+    return y_offset + x;
+}
 
 
 /**
@@ -330,6 +356,16 @@ unsigned int Grid::get_dead_cells(){
  * @throws
  *      std::exception or sub-class if x,y is not a valid coordinate within the grid.
  */
+Cell Grid::get(int x, int y){
+    if (x > this->width || y > this->height){
+        throw std::runtime_error("Not a valid grid coordinate");
+    }
+    int index = get_index(x, y);
+    if (grid[index] == '#'){
+        return Cell::ALIVE;
+    }
+    return Cell::DEAD;
+}
 
 
 /**
@@ -359,6 +395,14 @@ unsigned int Grid::get_dead_cells(){
  * @throws
  *      std::exception or sub-class if x,y is not a valid coordinate within the grid.
  */
+void Grid::set(int x, int y, Cell value) {
+    if (x > this->width || y > this->height){
+        throw std::runtime_error("Not a valid grid coordinate");
+    }
+
+    int index = get_index(x, y);
+    grid[index] = value;
+}
 
 
 /**
@@ -396,6 +440,13 @@ unsigned int Grid::get_dead_cells(){
  * @throws
  *      std::runtime_error or sub-class if x,y is not a valid coordinate within the grid.
  */
+char* Grid::operator()(int x, int y) {
+    if (x > this->width || y > this->height){
+        throw std::runtime_error("Not a valid grid coordinate");
+    }
+    int index = get_index(x, y);
+    return &(this->grid[index]);
+}
 
 
 /**
