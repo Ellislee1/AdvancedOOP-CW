@@ -29,9 +29,7 @@
  *      Grid grid;
  *
  */
-Grid::Grid() : Grid(0){
-    std::cout << "Default Called" << std::endl;
-}
+Grid::Grid() : Grid(0){}
 
 /**
  * Grid::Grid(square_size)
@@ -56,9 +54,7 @@ Grid::Grid() : Grid(0){
  * @param square_size
  *      The edge size to use for the width and height of the grid.
  */
-Grid::Grid(unsigned int square_size): Grid(square_size,square_size){
-    std::cout << "Size Called" << std::endl;
-}
+Grid::Grid(unsigned int square_size): Grid(square_size,square_size){}
 
 /**
  * Grid::Grid(width, height)
@@ -77,14 +73,13 @@ Grid::Grid(unsigned int square_size): Grid(square_size,square_size){
  *      The height of the grid.
  */
 Grid::Grid(unsigned int width, unsigned int height) {
-    std::cout << "Width " << width << " | Height " << height << std::endl;
     this->width = width;
     this->height = height;
-    this->size = width * height;
+    unsigned int size = width*height;
     this->grid = new char[size];
 
-    if (this->size > 0) {
-        for (int i = 0; i < this->size; i++) {
+    if (size > 0) {
+        for (int i = 0; i < size; i++) {
             this->grid[i] = Cell::DEAD;
         }
     }
@@ -115,8 +110,8 @@ Grid::Grid(unsigned int width, unsigned int height) {
  *      The width of the grid.
  */
 unsigned int Grid::get_width(){
-     return this->width;
- }
+    return this->width;
+}
 
 
 /**
@@ -169,6 +164,10 @@ unsigned int Grid::get_height(){
  * @return
  *      The number of total cells.
  */
+ unsigned int Grid::get_total_cells(){
+     unsigned int size = width * height;
+     return size;
+ }
 
 
 /**
@@ -194,6 +193,18 @@ unsigned int Grid::get_height(){
  * @return
  *      The number of alive cells.
  */
+ unsigned int Grid::get_alive_cells(){
+     unsigned int size = width * height;
+     unsigned int no_alive = 0;
+
+     for (int i = 0; i < size; i++){
+         if (grid[i] == Cell::ALIVE){
+            no_alive ++;
+         }
+     }
+     return no_alive;
+ }
+
 
 
 /**
@@ -219,6 +230,17 @@ unsigned int Grid::get_height(){
  * @return
  *      The number of dead cells.
  */
+unsigned int Grid::get_dead_cells(){
+    unsigned int size = width * height;
+    unsigned int no_dead = 0;
+
+    for (int i = 0; i < size; i++){
+        if (grid[i] == Cell::DEAD){
+            no_dead ++;
+        }
+    }
+    return no_dead;
+}
 
 
 /**
