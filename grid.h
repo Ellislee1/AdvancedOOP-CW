@@ -5,7 +5,7 @@
  * The test suites provide granular BDD style (Behaviour Driven Development) test cases
  * which will help further understand the specification you need to code to.
  *
- * @author YOUR_STUDENT_NUMBER
+ * @author 951536
  * @date March, 2020
  */
 #pragma once
@@ -25,6 +25,20 @@ enum Cell : char {
  * Declare the structure of the Grid class for representing a 2d grid of cells.
  */
 class Grid {
+    private:
+    unsigned int width;
+    unsigned int height;
+    char * grid;
+    unsigned int size;
+    public:
+        Grid();
+        Grid(unsigned int square_size);
+        Grid(unsigned int width, unsigned int height);
+        ~Grid() = default;
+
+        unsigned int get_width();
+        unsigned int get_height();
+
     // How to draw an owl:
     //      Step 1. Draw a circle.
     //      Step 2. Draw the rest of the owl.

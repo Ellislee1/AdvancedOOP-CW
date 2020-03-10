@@ -8,9 +8,10 @@
  *
  * You are encouraged to use STL container types as an underlying storage mechanism for the grid cells.
  *
- * @author YOUR_STUDENT_NUMBER
+ * @author 951536
  * @date March, 2020
  */
+#include <iostream>
 #include "grid.h"
 
 // Include the minimal number of headers needed to support your implementation.
@@ -28,7 +29,9 @@
  *      Grid grid;
  *
  */
-
+Grid::Grid() : Grid(0){
+    std::cout << "Default Called" << std::endl;
+}
 
 /**
  * Grid::Grid(square_size)
@@ -53,7 +56,9 @@
  * @param square_size
  *      The edge size to use for the width and height of the grid.
  */
-
+Grid::Grid(unsigned int square_size): Grid(square_size,square_size){
+    std::cout << "Size Called" << std::endl;
+}
 
 /**
  * Grid::Grid(width, height)
@@ -71,6 +76,19 @@
  * @param height
  *      The height of the grid.
  */
+Grid::Grid(unsigned int width, unsigned int height) {
+    std::cout << "Width " << width << " | Height " << height << std::endl;
+    this->width = width;
+    this->height = height;
+    this->size = width * height;
+    this->grid = new char[size];
+
+    if (this->size > 0) {
+        for (int i = 0; i < this->size; i++) {
+            this->grid[i] = Cell::DEAD;
+        }
+    }
+}
 
 
 /**
@@ -96,6 +114,9 @@
  * @return
  *      The width of the grid.
  */
+unsigned int Grid::get_width(){
+     return this->width;
+ }
 
 
 /**
@@ -121,7 +142,9 @@
  * @return
  *      The height of the grid.
  */
-
+unsigned int Grid::get_height(){
+    return this->height;
+}
 
 /**
  * Grid::get_total_cells()
@@ -519,4 +542,3 @@
  * @return
  *      Returns a reference to the output stream to enable operator chaining.
  */
-
