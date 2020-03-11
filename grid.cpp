@@ -285,24 +285,39 @@ void Grid::resize(int square_size){
  *      The new height for the grid.
  */
 void Grid::resize(int new_width, int new_height){
-    if(new_width == this->width && new_height == this->height){
-        return;
+    // Dont need to resize if it is the same size
+    if(new_width == this->width && new_height == this->height){return;}
+    // No negative sizes
+    if(new_width < 0 || new_height < 0){throw std::runtime_error("Negative sizes are not valid dimensions");}
+
+    // Create a new grid
+    Grid *new_grid = new Grid(new_width, new_height);
+
+    int x_max = this->width;
+    int y_max = this->height;
+
+    if(new_width < x_max){
+        x_max = new_width;
     }
-    Grid *new_grid = new Grid(new_width,new_height);
-    int x_padding = width - this->width;
-    int size = new_width * new_height;
-    int multiplier = 0;
-    for (int i = 0; i < this->height; i++) {
-        for (int j = 0; j < this->width; ++j) {
-            if (this->get(i,j) == Cell::ALIVE){
-                new_grid->set(i+(x_padding * multiplier), j, Cell::ALIVE);
+
+    if(new_height < y_max){
+        y_max = new_height;
+    }
+
+    for(int y = 0; y < y_max; y++){
+        for(int x = 0; x < x_max; x++){
+            if(this->get(x,y) == Cell::ALIVE){
+                new_grid->set(x,y,Cell::ALIVE);
             }
         }
-        multiplier++;
     }
-    this->width = new_width;
-    this->height = new_height;
-    memcpy(this->grid, new_grid->grid, size*sizeof(char));
+
+    // Why you work now?????
+    this->grid = new_grid->grid;
+    this->width = new_grid->width;
+    this->height = new_grid->height;
+
+    delete new_grid;
 }
 
 
@@ -358,6 +373,9 @@ int Grid::get_index(int x, int y){
  */
 Cell Grid::get(int x, int y){
     if (x > this->width || y > this->height){
+        throw std::runtime_error("Not a valid grid coordinate");
+    }
+    if (x < 0 || y < 0){
         throw std::runtime_error("Not a valid grid coordinate");
     }
     int index = get_index(x, y);
@@ -481,6 +499,7 @@ char* Grid::operator()(int x, int y) {
  */
 
 
+
 /**
  * Grid::crop(x0, y0, x1, y1)
  *
@@ -515,6 +534,43 @@ char* Grid::operator()(int x, int y) {
  *      std::exception or sub-class if x0,y0 or x1,y1 are not valid coordinates within the grid
  *      or if the crop window has a negative size.
  */
+Grid Grid::crop(int x0, int y0, int x1, int y1){
+    // Handle invalid sizes
+    if ((x0 || x1 )> this->width || (y0 || y1) > this->height){
+        throw std::runtime_error("Not a valid grid coordinate");
+    }
+    if (x0 < 0 || x1 < 0 || y1 < 0 || y0 < 0){
+        throw std::runtime_error("Not a valid grid coordinate");
+    }
+
+    // Handle reversed inputs
+    if(x1 < x0){
+        int temp_x = x1;
+        x1 = x0;
+        x0 = temp_x;
+    }
+    if(y1 < y0){
+        int temp_y = y1;
+        y1 = y0;
+        y0 = temp_y;
+    }
+
+    int new_width = x1-x0;
+    int new_height = y1-y0;
+
+    Grid *crop_grid = new Grid(new_width,new_height);
+
+    for(int y = y0; y < y1; y++){
+        for(int x = x0; x < x1; x++){
+            if(this->get(x,y) == Cell::ALIVE){
+                crop_grid->set(x-x0,y-y0,Cell::ALIVE);
+            }
+        }
+    }
+
+    return *crop_grid;
+
+}
 
 
 /**
