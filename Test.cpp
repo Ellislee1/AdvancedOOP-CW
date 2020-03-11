@@ -6,23 +6,18 @@
 #include <iostream>
 
 int main(int argc, char *argv[]){
-    Grid test3 = Grid(8, 8);
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            test3.set(j,i,Cell::ALIVE);
-        }
-    }
-    std::cout << test3.get_alive_cells() << std::endl;
-    std::cout << test3.get_dead_cells() << std::endl;
-    test3.resize(16);
-    for (int i = 0; i < 8; ++i) {
-        for (int j = 0; j < 8; ++j) {
+    Grid w(8, 8);
+
+    for (int y = 2; y < 6; y++) {
+        for (int x = 2; x < 6; x++) {
+            w.set(x, y, Cell::ALIVE);
         }
     }
 
+    Grid h = w.crop(0, 0, 4, 4);
 
-    std::cout << test3.get_alive_cells() << std::endl;
-    std::cout << test3.get_dead_cells() << std::endl;
+    std::cout << h << std::endl;
+    std::cout << w << std::endl;
 
     return 0;
 }

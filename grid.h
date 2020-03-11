@@ -12,6 +12,8 @@
 
 // Add the minimal number of includes you need in order to declare the class.
 // #include ...
+#include <vector>
+#include <iostream>
 
 /**
  * A Cell is a char limited to two named values for Cell::DEAD and Cell::ALIVE.
@@ -31,8 +33,11 @@ class Grid {
 private:
     int width;
     int height;
-    char* grid;
-    int get_index(int x, int y);
+    int size;
+    std::vector<Cell> grid;
+    [[nodiscard]] int get_index(int x, int y) const;
+    void set_cell(Grid &rte_grid, int get_x, int get_y, int set_x, int set_y);
+    friend std::ostream& operator<<(std::ostream& output_stream, Grid& grid);
 public:
     Grid();
     explicit Grid(int square_size);
@@ -40,22 +45,28 @@ public:
     ~Grid() = default;
 
     // Getters
-    int get_width();
-    int get_height();
-    int get_total_cells();
-    int get_alive_cells();
-    int get_dead_cells();
-    Cell get(int x, int y);
+    [[nodiscard]] int get_width() const;
+    [[nodiscard]] int get_height() const;
+    [[nodiscard]] int get_total_cells() const;
+    [[nodiscard]] int get_alive_cells() const;
+    [[nodiscard]] int get_dead_cells() const;
+    [[nodiscard]] Cell get(int x, int y) const;
 
     // Setters
     void set(int x, int y, Cell value);
 
     // Operator overload
-    char* operator()(int x, int y);
+    Cell& operator()(int x, int y);
+    const Cell& operator()(int x, int y)const;
 
     // Other Functions
     void resize(int square_size);
     void resize(int new_width, int new_height);
     Grid crop(int x0, int y0, int x1, int y1);
     void merge(Grid &other, int x0, int y0, bool alive_only = false);
+    Grid rotate(int rotation);
+
+    void add_dash();
+
+    void add_dash(std::ostream &ostream, int width);
 };
