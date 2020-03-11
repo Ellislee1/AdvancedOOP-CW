@@ -39,18 +39,23 @@ public:
     Grid(int width, int height);
     ~Grid() = default;
 
+    // Getters
     int get_width();
     int get_height();
     int get_total_cells();
     int get_alive_cells();
     int get_dead_cells();
+    Cell get(int x, int y);
+
+    // Setters
+    void set(int x, int y, Cell value);
+
+    // Operator overload
+    char* operator()(int x, int y);
+
+    // Other Functions
     void resize(int square_size);
     void resize(int new_width, int new_height);
-    char* operator()(int x, int y);
-    void set(int x, int y, Cell value);
-    Cell get(int x, int y);
     Grid crop(int x0, int y0, int x1, int y1);
-    void merge(Grid &other, int x0, int y0, bool alive_only);
-
-    void merge(Grid &other, int x0, int y0);
+    void merge(Grid &other, int x0, int y0, bool alive_only = false);
 };

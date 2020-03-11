@@ -610,9 +610,6 @@ Grid Grid::crop(int x0, int y0, int x1, int y1){
  * @throws
  *      std::exception or sub-class if the other grid being placed does not fit within the bounds of the current grid.
  */
-void Grid::merge(Grid &other, int x0, int y0){
-    this->merge(other, x0,y0, false);
-}
 void Grid::merge(Grid &other, int x0, int y0, bool alive_only){
     int other_size = other.width * other.height;
     int this_size = this->width * this->height;
