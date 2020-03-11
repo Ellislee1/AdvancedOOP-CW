@@ -610,7 +610,34 @@ Grid Grid::crop(int x0, int y0, int x1, int y1){
  * @throws
  *      std::exception or sub-class if the other grid being placed does not fit within the bounds of the current grid.
  */
+void Grid::merge(Grid &other, int x0, int y0){
+    this->merge(other, x0,y0, false);
+}
+void Grid::merge(Grid &other, int x0, int y0, bool alive_only){
+    int other_size = other.width * other.height;
+    int this_size = this->width * this->height;
 
+    if(other_size > this_size){
+        throw std::runtime_error("The grid is out of bounds");
+    }
+
+    if (((x0 + (other.width)) > this->width) || ((y0 + (other.height)) > this->height)){
+        throw std::runtime_error("The grid is out of bounds small");
+    }
+
+    for (int y = 0; y < other.height; y++){
+        for (int x = 0; x < other.width; x++){
+            Cell state = other.get(x,y);
+            if(alive_only){
+                if(state == Cell::ALIVE){
+                    this->set(x+x0,y+y0,state);
+                }
+            } else {
+                this->set(x+x0,y+y0,state);
+            }
+        }
+    }
+}
 
 /**
  * Grid::rotate(rotation)

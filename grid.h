@@ -50,4 +50,7 @@ public:
     void set(int x, int y, Cell value);
     Cell get(int x, int y);
     Grid crop(int x0, int y0, int x1, int y1);
+    void merge(Grid &other, int x0, int y0, bool alive_only);
+
+    void merge(Grid &other, int x0, int y0);
 };
