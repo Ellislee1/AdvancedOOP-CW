@@ -32,11 +32,17 @@ public:
     World();
     explicit World(int square_size);
     World(int width, int height);
-    World(Grid &initial_state);
+    explicit World(Grid &initial_state);
 
+    // Getters
     [[nodiscard]] int get_width() const;
     [[nodiscard]] int get_height() const;
     [[nodiscard]] int get_total_cells() const;
     [[nodiscard]] int get_alive_cells() const;
     [[nodiscard]] int get_dead_cells() const;
+    [[nodiscard]] const Grid get_state() const;
+
+    // Others
+    void resize(int square_size);
+    void resize(int width, int height);
 };
