@@ -18,14 +18,14 @@
  *          - Moving off the left edge you appear on the right edge and vice versa.
  *          - Moving off the top edge you appear on the bottom edge and vice versa.
  *
- * @author YOUR_STUDENT_NUMBER
+ * @author 951536
  * @date March, 2020
  */
-#include "world.h"
-#include "grid.h"
 
 // Include the minimal number of headers needed to support your implementation.
 // #include ...
+#include "world.h"
+#include "grid.h"
 
 /**
  * World::World()
