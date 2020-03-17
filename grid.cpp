@@ -77,7 +77,7 @@ Grid::Grid(int square_size): Grid(square_size,square_size){}
 Grid::Grid(int width, int height) {
     this->width = width;
     this->height = height;
-    this->size = width*height;
+    int size = width*height;
     this->grid = std::vector<Cell>(size, Cell::DEAD);
 }
 
@@ -160,7 +160,8 @@ int Grid::get_height() const{
  *      The number of total cells.
  */
  int Grid::get_total_cells() const{
-     return this->size;
+     return this->grid.size();
+//     return this->size;
  }
 
 
@@ -268,7 +269,7 @@ void Grid::resize(int new_width, int new_height){
     // Dont need to resize if it is the same size
     if(new_width == this->width && new_height == this->height){return;}
     // No negative sizes
-    if(new_width < 0 || new_height < 0){throw std::runtime_error("Negative sizes are not valid dimensions");}
+    if(new_width < 0 || new_height < 0){throw std::runtime_error("Grid::resize() : Negative sizes are not valid dimensions");}
 
     // Create a new grid
     Grid *new_grid = new Grid(new_width, new_height);
@@ -296,8 +297,6 @@ void Grid::resize(int new_width, int new_height){
     this->grid = new_grid->grid;
     this->width = new_grid->width;
     this->height = new_grid->height;
-    this->size = new_grid->size;
-
     delete new_grid;
 }
 
@@ -354,10 +353,10 @@ int Grid::get_index(int x, int y) const{
  */
 Cell Grid::get(int x, int y) const{
     if (x > this->width || y > this->height){
-        throw std::runtime_error("Not a valid grid coordinate");
+        throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
     if (x < 0 || y < 0){
-        throw std::runtime_error("Not a valid grid coordinate");
+        throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
     int index = this->get_index(x, y);
     return grid[index];
@@ -393,7 +392,7 @@ Cell Grid::get(int x, int y) const{
  */
 void Grid::set(const int x, const int y, const Cell value) {
     if (x > this->width || y > this->height){
-        throw std::runtime_error("Not a valid grid coordinate");
+        throw std::runtime_error("Grid::set() : Not a valid grid coordinate");
     }
 
     int index = get_index(x, y);
@@ -438,7 +437,7 @@ void Grid::set(const int x, const int y, const Cell value) {
  */
 Cell& Grid::operator()(int x, int y) {
     if (x > this->width || y > this->height){
-        throw std::runtime_error("Not a valid grid coordinate");
+        throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
     int index = get_index(x, y);
     return (this->grid[index]);
@@ -477,7 +476,7 @@ Cell& Grid::operator()(int x, int y) {
  */
 const Cell& Grid::operator()(int x, int y) const {
     if (x > this->width || y > this->height){
-        throw std::runtime_error("Not a valid grid coordinate");
+        throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
     int index = get_index(x, y);
     return this->grid[index];
@@ -521,15 +520,15 @@ const Cell& Grid::operator()(int x, int y) const {
 Grid Grid::crop(const int x0, const int y0, const int x1, const int y1){
     // Handle invalid sizes
     if ((x0 || x1 )> this->width || (y0 || y1) > this->height){
-        throw std::runtime_error("Not a valid grid coordinate");
+        throw std::runtime_error("Grid::crop() : Not a valid grid coordinate");
     }
     if (x0 < 0 || x1 < 0 || y1 < 0 || y0 < 0){
-        throw std::runtime_error("Not a valid grid coordinate");
+        throw std::runtime_error("Grid::crop() : Not a valid grid coordinate");
     }
 
     // Handle reversed inputs
     if(x1 < x0 || y1 < y0){
-        throw std::runtime_error("Invalid x/y bounds");
+        throw std::runtime_error("Grid::crop() : Invalid x/y bounds");
     }
 
     int new_width = x1-x0;
@@ -587,16 +586,16 @@ Grid Grid::crop(const int x0, const int y0, const int x1, const int y1){
  * @throws
  *      std::exception or sub-class if the other grid being placed does not fit within the bounds of the current grid.
  */
-void Grid::merge(Grid &other, int x0, int y0, bool alive_only){
+void Grid::merge(const Grid &other, int x0, int y0, bool alive_only){
     int other_size = other.width * other.height;
     int this_size = this->width * this->height;
 
     if(other_size > this_size){
-        throw std::runtime_error("The grid is out of bounds");
+        throw std::runtime_error("Grid::Merge() : The grid is out of bounds");
     }
 
     if (((x0 + (other.width)) > this->width) || ((y0 + (other.height)) > this->height)){
-        throw std::runtime_error("The grid is out of bounds small");
+        throw std::runtime_error("Grid::Merge() : The grid is out of bounds small");
     }
 
     for (int y = 0; y < other.height; y++){
@@ -635,15 +634,10 @@ void Grid::merge(Grid &other, int x0, int y0, bool alive_only){
  * @return
  *      Returns a copy of the grid that has been rotated.
  */
-Grid Grid::rotate(int rotation){
+Grid Grid::rotate(int rotation)const{
     // if 0/multiple of 4 return this
     // if multiple of 90 and ! multiple of 180 return array with width and height swapped
     //run code
-}
-
-void Grid::set_cell(Grid &rte_grid, const int get_x, const int get_y,const int set_x, const int set_y){
-    Cell cell = this->get(get_x, get_y);
-    rte_grid.set(set_x,set_y,cell);
 }
 
 

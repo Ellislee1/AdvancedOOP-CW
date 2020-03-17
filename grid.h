@@ -33,10 +33,8 @@ class Grid {
 private:
     int width;
     int height;
-    int size;
     std::vector<Cell> grid;
     [[nodiscard]] int get_index(int x, int y) const;
-    void set_cell(Grid &rte_grid, int get_x, int get_y, int set_x, int set_y);
     friend std::ostream& operator<<(std::ostream& output_stream, Grid& grid);
 public:
     Grid();
@@ -63,10 +61,6 @@ public:
     void resize(int square_size);
     void resize(int new_width, int new_height);
     Grid crop(int x0, int y0, int x1, int y1);
-    void merge(Grid &other, int x0, int y0, bool alive_only = false);
-    Grid rotate(int rotation);
-
-    void add_dash();
-
-    void add_dash(std::ostream &ostream, int width);
+    void merge(const Grid &other, int x0, int y0, bool alive_only = false);
+    [[nodiscard]] Grid rotate(int rotation) const;
 };

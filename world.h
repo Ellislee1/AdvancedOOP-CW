@@ -23,11 +23,12 @@
  */
 class World {
 private:
-    Grid cur_world;
-    Grid pre_world;
     // How to draw an owl:
     //      Step 1. Draw a circle.
     //      Step 2. Draw the rest of the owl.
+    Grid cur_world;
+    Grid pre_world;
+    [[nodiscard]] int count_neighbours(int x, int y, bool toroidal) const;
 public:
     World();
     explicit World(int square_size);

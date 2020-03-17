@@ -353,7 +353,10 @@ void World::resize(int width, int height){
  * @return
  *      Returns the number of alive neighbours.
  */
-
+int World::count_neighbours(int x, int y, bool toroidal) const{
+    int width = this->cur_world.get_width();
+    int height = this->cur_world.get_height();
+}
 
 /**
  * World::step(toroidal)
