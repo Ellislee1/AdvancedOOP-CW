@@ -352,12 +352,14 @@ int Grid::get_index(int x, int y) const{
  *      std::exception or sub-class if x,y is not a valid coordinate within the grid.
  */
 Cell Grid::get(int x, int y) const{
-    if (x > this->width || y > this->height){
+    if (x > (this->width)-1 || y > (this->height)-1){
         throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
+
     if (x < 0 || y < 0){
         throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
+
     int index = this->get_index(x, y);
     if (this->grid[index] == Cell::ALIVE){
         return Cell::ALIVE;
