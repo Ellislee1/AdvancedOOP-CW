@@ -393,22 +393,24 @@ int World::count_neighbours(int x, int y, bool toroidal) const{
             }
         }
     } else {
-        for(int y_pos=y-1; y_pos<y+1; y_pos++){
-            int use_y = y_pos;
-            if (use_y < 0){
-                use_y = height;
-            } else if (use_y > height){
+        for(int y_pos=y-1; y_pos<=y+1; y_pos++){
+            int use_y;
+            use_y = y_pos;
+
+            if(use_y >= height){
                 use_y = 0;
+            } else if (use_y < 0) {
+                use_y = height-1;
             }
+            for(int x_pos=x-1; x_pos<=x+1; x_pos++){
+                int use_x;
+                use_x = x_pos;
 
-            for(int x_pos=x-1; x_pos<x+1; x_pos++){
-                int use_x = x_pos;
-                if (use_x < 0){
-                    use_x = width;
-                } else if (use_x > height){
+                if(use_x >= width){
                     use_x = 0;
+                } else if (use_x < 0) {
+                    use_x = width-1;
                 }
-
                 if(this->cur_world.get(use_x,use_y) == Cell::ALIVE){
                     alive++;
                 }
