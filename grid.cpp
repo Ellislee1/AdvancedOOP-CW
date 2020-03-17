@@ -359,7 +359,10 @@ Cell Grid::get(int x, int y) const{
         throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
     int index = this->get_index(x, y);
-    return grid[index];
+    if (this->grid[index] == Cell::ALIVE){
+        return Cell::ALIVE;
+    }
+    return Cell::DEAD;
 
 }
 
@@ -439,6 +442,9 @@ Cell& Grid::operator()(int x, int y) {
     if (x > this->width || y > this->height){
         throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
+    if(x < 0 || y< 0){
+        throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
+    }
     int index = get_index(x, y);
     return (this->grid[index]);
 }
@@ -476,6 +482,10 @@ Cell& Grid::operator()(int x, int y) {
  */
 const Cell& Grid::operator()(int x, int y) const {
     if (x > this->width || y > this->height){
+        throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
+    }
+
+    if(x < 0 || y< 0){
         throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
     int index = get_index(x, y);
@@ -517,7 +527,7 @@ const Cell& Grid::operator()(int x, int y) const {
  *      std::exception or sub-class if x0,y0 or x1,y1 are not valid coordinates within the grid
  *      or if the crop window has a negative size.
  */
-Grid Grid::crop(const int x0, const int y0, const int x1, const int y1){
+Grid Grid::crop(int x0, int y0, int x1, int y1) const{
     // Handle invalid sizes
     if ((x0 || x1 )> this->width || (y0 || y1) > this->height){
         throw std::runtime_error("Grid::crop() : Not a valid grid coordinate");

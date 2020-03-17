@@ -79,6 +79,7 @@ World::World(int square_size):World(square_size, square_size){}
  */
 World::World(int width, int height){
     this->cur_world = Grid(width,height);
+    this->next_world = Grid(width,height);
 }
 
 /**
@@ -102,6 +103,7 @@ World::World(int width, int height){
  */
 World::World(Grid &initial_state){
     this->cur_world = initial_state;
+    this->next_world = Grid(this->cur_world.get_width(), this->cur_world.get_height());
 }
 
 /**
@@ -268,7 +270,7 @@ int World::get_dead_cells() const {
  * @return
  *      A reference to the current state.
  */
-const Grid World::get_state() const{
+Grid World::get_state() const{
     const Grid &state = this->cur_world;
     return state;
 }
@@ -354,9 +356,73 @@ void World::resize(int width, int height){
  *      Returns the number of alive neighbours.
  */
 int World::count_neighbours(int x, int y, bool toroidal) const{
-    int width = this->cur_world.get_width();
-    int height = this->cur_world.get_height();
+    int width = this->get_width(); // Get width to save computation
+    int height = this->get_height(); // Get height to save computation
+    int alive = 0; // Count number of alive cells
+
+    // See if the centre point is alive.
+    bool pos_centre = false;
+    if (this->cur_world.get(x,y) == Cell::ALIVE){
+        pos_centre = true;
+    }
+//    std::cout << pos_centre << std::endl;
+//
+//    // If all bounds are within the grid count alive in a cropped version of the grid.
+//    if ((x-1 >=0 && y-1 >=0) && (x+1 <= width && y+1 <= height)){
+//        Grid cropped = this->cur_world.crop(x-1,y-1,x+1,y+1);
+//        alive = cropped.get_alive_cells();
+//
+//        // reduce count by 1
+//        if(pos_centre && alive > 0){
+//            alive--;
+//        }
+//
+//        return alive;
+//    }
+
+    if(!toroidal){
+        for(int y_pos=y-1; y_pos<=y+1; y_pos++){
+            for(int x_pos=x-1; x_pos<=x+1; x_pos++){
+                try{
+                    if(this->cur_world.get(x_pos,y_pos) == Cell::ALIVE){
+                        alive++;
+                    }
+                } catch (std::runtime_error &ex){
+                    continue;
+                }
+            }
+        }
+    } else {
+        for(int y_pos=y-1; y_pos<y+1; y_pos++){
+            int use_y = y_pos;
+            if (use_y < 0){
+                use_y = height - 1;
+            } else if (use_y > height){
+                use_y = 0;
+            }
+
+            for(int x_pos=x-1; x_pos<x+1; x_pos++){
+                int use_x = x_pos;
+                if (use_x < 0){
+                    use_x = width - 1;
+                } else if (use_x > height){
+                    use_x = 0;
+                }
+
+                if(this->cur_world.get(use_x,use_y) == Cell::ALIVE){
+                    alive++;
+                }
+            }
+        }
+    }
+
+    if(pos_centre && alive > 0){
+        alive--;
+    }
+    return alive;
+
 }
+
 
 /**
  * World::step(toroidal)
@@ -378,7 +444,24 @@ int World::count_neighbours(int x, int y, bool toroidal) const{
  *      Optional parameter. If true then the step will consider the grid as a torus, where the left edge
  *      wraps to the right edge and the top to the bottom. Defaults to false.
  */
+void World::step(bool toroidal){
+    int width = this->get_width(); // Get width to save computation
+    int height = this->get_height(); // Get height to save computation
 
+    for (int y = 0; y<height; y++){
+        for (int x = 0; x<width; x++) {
+            if (this->count_neighbours(x, y, toroidal) < 2 || this->count_neighbours(x, y, toroidal) > 3) {
+                this->next_world.set(x, y, Cell::DEAD);
+            } else if (this->count_neighbours(x, y, toroidal) == 3) {
+                this->next_world.set(x, y, Cell::ALIVE);
+            } else if (this->count_neighbours(x, y, toroidal) == 2 && this->cur_world.get(x, y) == Cell::ALIVE) {
+                this->next_world.set(x, y, Cell::ALIVE);
+            } else {this->next_world.set(x, y, Cell::DEAD);}
+        }
+    }
+
+    std::swap(this->cur_world, this->next_world);
+}
 
 /**
  * World::advance(steps, toroidal)
@@ -393,3 +476,8 @@ int World::count_neighbours(int x, int y, bool toroidal) const{
  *      Optional parameter. If true then the step will consider the grid as a torus, where the left edge
  *      wraps to the right edge and the top to the bottom. Defaults to false.
  */
+void World::advance(int steps, bool toroidal){
+    for (int i = 0; i<steps; i++){
+        World::step(toroidal);
+    }
+}

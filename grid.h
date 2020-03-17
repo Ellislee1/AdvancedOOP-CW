@@ -60,7 +60,7 @@ public:
     // Other Functions
     void resize(int square_size);
     void resize(int new_width, int new_height);
-    Grid crop(int x0, int y0, int x1, int y1);
+    [[nodiscard]] Grid crop(int x0, int y0, int x1, int y1) const;
     void merge(const Grid &other, int x0, int y0, bool alive_only = false);
     [[nodiscard]] Grid rotate(int rotation) const;
 };
