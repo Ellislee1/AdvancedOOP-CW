@@ -16,9 +16,14 @@
 /**
  * Declare the interface of the Zoo namespace for constructing lifeforms and saving and loading them from file.
  */
+#include "grid.h"
+
 namespace Zoo {
     // How to draw an owl:
     //      Step 1. Draw a circle.
     //      Step 2. Draw the rest of the owl.
-
-};
+    Grid glider();
+    Grid r_pentomino();
+    Grid light_weight_spaceship();
+    Grid load_ascii(const std::string& path);
+}

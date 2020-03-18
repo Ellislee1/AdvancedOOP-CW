@@ -25,6 +25,8 @@
 
 // Include the minimal number of headers needed to support your implementation.
 // #include ...
+#include "grid.h"
+#include <fstream>
 
 /**
  * Zoo::glider()
@@ -46,7 +48,16 @@
  * @return
  *      Returns a Grid containing a glider.
  */
+Grid Zoo::glider(){
+    Grid glider(3);
+    glider.set(1,0, Cell::ALIVE);
+    glider.set(2,1, Cell::ALIVE);
+    glider.set(0,2, Cell::ALIVE);
+    glider.set(1,2, Cell::ALIVE);
+    glider.set(2,2, Cell::ALIVE);
 
+    return glider;
+}
 
 /**
  * Zoo::r_pentomino()
@@ -68,7 +79,17 @@
  * @return
  *      Returns a Grid containing a r-pentomino.
  */
+Grid Zoo::r_pentomino(){
+    Grid r_pentomino(3);
 
+    r_pentomino.set(1,0, Cell::ALIVE);
+    r_pentomino.set(2,0, Cell::ALIVE);
+    r_pentomino.set(0,1, Cell::ALIVE);
+    r_pentomino.set(1,1, Cell::ALIVE);
+    r_pentomino.set(1,2, Cell::ALIVE);
+
+    return r_pentomino;
+}
 
 /**
  * Zoo::light_weight_spaceship()
@@ -91,6 +112,21 @@
  * @return
  *      Returns a grid containing a light weight spaceship.
  */
+Grid Zoo::light_weight_spaceship(){
+    Grid light_weight_spaceship(5,4);
+
+    light_weight_spaceship.set(1,0, Cell::ALIVE);
+    light_weight_spaceship.set(4,0, Cell::ALIVE);
+    light_weight_spaceship.set(0,1, Cell::ALIVE);
+    light_weight_spaceship.set(0,2, Cell::ALIVE);
+    light_weight_spaceship.set(4,2, Cell::ALIVE);
+    light_weight_spaceship.set(0,3, Cell::ALIVE);
+    light_weight_spaceship.set(1,3, Cell::ALIVE);
+    light_weight_spaceship.set(2,3, Cell::ALIVE);
+    light_weight_spaceship.set(3,3, Cell::ALIVE);
+
+    return light_weight_spaceship;
+}
 
 
 /**
@@ -117,7 +153,47 @@
  *          - Newline characters are not found when expected during parsing.
  *          - The character for a cell is not the ALIVE or DEAD character.
  */
+Grid Zoo::load_ascii(std::string const& path) {
+    std::ifstream read;
+    read.open(path);
 
+    if(!read){
+        throw std::runtime_error("Zoo::load_ascii(): Could not open file, path does not exist:" + path);
+    }
+
+    char c = read.get();
+    int width = c-'0';
+    read.get();
+    c = read.get();
+    int height = c-'0';
+
+    if (width < 0 || height < 0){
+        throw std::runtime_error("Zoo::load_ascii(): Error, a negative width or height was set, check file.");
+    }
+    read.get();
+
+    Grid from_file(width,height);
+    for (int y = 0; y < height; y++){
+        for (int x = 0; x <= width; x++){
+            c = read.get();
+            if(x == width){
+                if (c != 10){
+                    throw std::runtime_error("Zoo::load_ascii(): Newline character expected and not found ln:" + std::to_string(y));
+                }
+            }
+
+            if(c == 35){
+                from_file.set(x,y, Cell::ALIVE);
+            } else if (c != 32 && c != 10) {
+                throw std::runtime_error("Zoo::load_ascii(): Character found is not an expected character: " + std::to_string(c));
+            }
+        }
+    }
+
+    read.close();
+
+    return from_file;
+}
 
 /**
  * Zoo::save_ascii(path, grid)
@@ -201,4 +277,3 @@
  * @throws
  *      Throws std::runtime_error or sub-class if the file cannot be opened.
  */
-
