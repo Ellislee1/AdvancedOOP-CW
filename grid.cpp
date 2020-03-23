@@ -647,34 +647,36 @@ void Grid::merge(const Grid &other, int x0, int y0, bool alive_only){
  *      Returns a copy of the grid that has been rotated.
  */
 Grid Grid::rotate(int rotation)const{
-    int rotations = (rotation%4);
-    Grid rotated(this->get_width(), this->get_height());
-    rotated.grid = this->grid;
+    int rotations = (rotation%4); // Work out if the grid has been rotated at all
+    Grid rotated(this->get_width(), this->get_height()); // set the grid to the current width and height
+    rotated.grid = this->grid; // make the current and new grids equal
 
     if (rotations == 0){
-        return rotated;
+        return rotated; // return the grid
     }
 
     if(rotation < 0){
-        rotations += 4;
+        rotations += 4; // Magic maths as %(mod) returns negative numbers and 1 -90 turn == 3 90 turns -1 == 3, -2 == 2 & -3 == 1
     }
 
+    // Loop through the number of rotations
     for (int i = 0; i<rotations; i++){
-        Grid temp(rotated.get_height(), rotated.get_width());
+        Grid temp(rotated.get_height(), rotated.get_width()); // Create temp grid
 
+        // Loop through this grid (Fancy Transpose and reverse rows)
         for (int y = 0; y < temp.get_height(); y++){
             for (int x = 0; x < temp.get_width(); x++){
-                if (rotated.get(y,x) == Cell::ALIVE){
-                    temp.set((temp.get_width()-1)-x,y, Cell::ALIVE);
+                if (rotated.get(y,x) == Cell::ALIVE){ // Check if origin cell is alive
+                    temp.set((temp.get_width()-1)-x,y, Cell::ALIVE); // transpose and reverse.
                 }
             }
         }
 
-        rotated.resize(temp.get_width(), temp.get_height());
-        rotated = temp;
+        rotated.resize(temp.get_width(), temp.get_height()); // Resize the rotated array to match the temp
+        rotated = temp; // copy the temp to the rotated
     }
+    
     return rotated;
-    // if multiple of 90 and ! multiple of 180 return array with width and height swapped
 }
 
 
