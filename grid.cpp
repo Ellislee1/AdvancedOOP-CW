@@ -400,6 +400,10 @@ void Grid::set(const int x, const int y, const Cell value) {
         throw std::runtime_error("Grid::set() : Not a valid grid coordinate");
     }
 
+    if (x < 0 || y < 0){
+        throw std::runtime_error("Grid::set() : Not a valid grid coordinate");
+    }
+
     int index = get_index(x, y);
     grid[index] = value;
 }
@@ -607,7 +611,11 @@ void Grid::merge(const Grid &other, int x0, int y0, bool alive_only){
     }
 
     if (((x0 + (other.width)) > this->width) || ((y0 + (other.height)) > this->height)){
-        throw std::runtime_error("Grid::Merge() : The grid is out of bounds small");
+        throw std::runtime_error("Grid::Merge() : The grid is out of bounds");
+    }
+
+    if(x0 < 0 || y0 < 0){
+        throw std::runtime_error("Grid::Merge() : Invalid position");
     }
 
     for (int y = 0; y < other.height; y++){
