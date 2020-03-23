@@ -647,9 +647,34 @@ void Grid::merge(const Grid &other, int x0, int y0, bool alive_only){
  *      Returns a copy of the grid that has been rotated.
  */
 Grid Grid::rotate(int rotation)const{
-    // if 0/multiple of 4 return this
+    int rotations = (rotation%4);
+    Grid rotated(this->get_width(), this->get_height());
+    rotated.grid = this->grid;
+
+    if (rotations == 0){
+        return rotated;
+    }
+
+    if(rotation < 0){
+        rotations += 4;
+    }
+
+    for (int i = 0; i<rotations; i++){
+        Grid temp(rotated.get_height(), rotated.get_width());
+
+        for (int y = 0; y < temp.get_height(); y++){
+            for (int x = 0; x < temp.get_width(); x++){
+                if (rotated.get(y,x) == Cell::ALIVE){
+                    temp.set((temp.get_width()-1)-x,y, Cell::ALIVE);
+                }
+            }
+        }
+
+        rotated.resize(temp.get_width(), temp.get_height());
+        rotated = temp;
+    }
+    return rotated;
     // if multiple of 90 and ! multiple of 180 return array with width and height swapped
-    //run code
 }
 
 
