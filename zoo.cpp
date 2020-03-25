@@ -27,6 +27,7 @@
 // #include ...
 #include "grid.h"
 #include <fstream>
+#include <cmath>
 
 /**
  * Zoo::glider()
@@ -274,37 +275,49 @@ Grid Zoo::load_binary(const std::string& path){
     std::ifstream in;
     in.open(path, std::ios::binary | std::ios::in);
 
-
     if(!in){
         in.close();
         throw std::runtime_error("Zoo::load_binary(): Could not open file, path does not exist:" + path);
     }
+
     const int start = in.tellg();
     in.seekg(0,std::ios::end);
     const int end = in.tellg();
     const int size = end - start;
-    std::cout << size << std::endl;
     in.seekg(0,std::ios::beg);
 
+    if(size < 9){
+        in.close();
+        throw std::runtime_error("Zoo::load_binary(): Unexpected end of file");
+    }
+
     int width;
-    in.read((char*)&width, 4);
     int height;
-    in.read((char*)&height, 4);
-    // Grid g(width,height);
-    //std::cout<< width << height <<std::endl;
-
     int grid;
-    in.read((char*)&grid, (size-8));
-    in.close();
 
+    in.read((char *) &width, 4);
+    in.read((char *) &height, 4);
+    
+    int remainder = std::ceil((width * height)/8);
+    if (size - 8 < remainder){
+        in.close();
+        throw std::runtime_error("Zoo::load_binary(): Unexpected end of file");
+    }
+
+    in.read((char *) &grid, (size - 8));
+    in.close();
     Grid g(width, height);
 
     for (int y = 0; y < height; y++){
         int offset = width * y;
-        for (int x=0; x<width; x++){
-            int curbit = (grid >> (x+offset))&1;
-            if (curbit == 1){
-                g.set(x,y, Cell::ALIVE);
+        for (int x=0; x<width; x++) {
+            try{
+            int curbit = (grid >> (x + offset)) & 1;
+            if (curbit == 1) {
+                g.set(x, y, Cell::ALIVE);
+            }
+            } catch(...){
+                throw std::runtime_error("Zoo::load_binary(): File ended unexpectedly");
             }
         }
     }
