@@ -311,13 +311,9 @@ Grid Zoo::load_binary(const std::string& path){
     for (int y = 0; y < height; y++){
         int offset = width * y;
         for (int x=0; x<width; x++) {
-            try{
             int curbit = (grid >> (x + offset)) & 1;
             if (curbit == 1) {
                 g.set(x, y, Cell::ALIVE);
-            }
-            } catch(...){
-                throw std::runtime_error("Zoo::load_binary(): File ended unexpectedly");
             }
         }
     }
@@ -353,4 +349,45 @@ Grid Zoo::load_binary(const std::string& path){
  *
  * @throws
  *      Throws std::runtime_error or sub-class if the file cannot be opened.
- */
+*/
+void Zoo::save_binary(const std::string& path, const Grid& grid) {
+    int width = grid.get_width();
+    int height = grid.get_height();
+
+    int required = width * height;
+
+    if (required%8 != 0){
+        required += (8-(required%8));
+    }
+
+    std::ofstream out;
+    out.open(path, std::ios::binary | std::ios::out);
+
+    if(!out){
+        out.close();
+        throw std::runtime_error("Zoo::save_binary(): Could not open file, path does not exist:" + path);
+    }
+
+    out.write((char*)&width, 4);
+    out.write((char*)&height, 4);
+
+    int bit_grid = 0;
+    int counter = 0;
+
+    for (int y = 0; y < height; y++){
+        int offset = width * y;
+        for (int x=0; x<width; x++) {
+            if (grid.get(x,y) == Cell::ALIVE){
+                bit_grid |= 1 << (x+offset);
+            }
+            ++counter;
+            if (counter > 32){
+                out.write((char*)&bit_grid, sizeof(int));
+                counter = 0;
+                bit_grid = 0;
+            }
+        }
+    }
+    out.close();
+
+}
