@@ -4,12 +4,12 @@
 
 #include "grid.h"
 #include "zoo.h"
+#include "world.h"
 #include <iostream>
 
 int main(int argc, char *argv[]){
-    Grid g = Zoo::load_ascii("../test_inputs/GLIDER.gol");
-
-            std::cout << g << std::endl;
+    World w(8);
+    std::cout << w.get_state() << std::endl;;
 
     return 0;
 }

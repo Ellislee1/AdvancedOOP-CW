@@ -270,9 +270,8 @@ int World::get_dead_cells() const {
  * @return
  *      A reference to the current state.
  */
-Grid World::get_state() const{
-    const Grid &state = this->cur_world;
-    return state;
+Grid& World::get_state() const {
+    return (Grid &)(this->cur_world);
 }
 
 /**

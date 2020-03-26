@@ -20,5 +20,9 @@ test15 25/3/20
 test21 25/3/20
 test22 26/3/20
 test16 26/3/20
+test_run 26/03/20
+game_of_life_simple 26/03/20
+game_of_life 26/03/20
+
 
 Memory check (No issues) : 26/3/20 18:02

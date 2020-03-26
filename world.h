@@ -42,7 +42,7 @@ public:
     [[nodiscard]] int get_total_cells() const;
     [[nodiscard]] int get_alive_cells() const;
     [[nodiscard]] int get_dead_cells() const;
-    [[nodiscard]] Grid get_state() const;
+    [[nodiscard]] Grid& get_state() const;
 
     // Others
     void resize(int square_size);
