@@ -1,1 +1,2 @@
-Most of the code works: tests 1-14, 17-20 pass (15,16,21,22 still to do). This is the backup submission should BB fail
+All code works all tests pass game is playable. Need to refactor and optimise.
+for binary saving, system saves only required ammount
