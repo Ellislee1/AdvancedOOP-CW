@@ -31,7 +31,7 @@
  *      Grid grid;
  *
  */
-Grid::Grid() : Grid(0,0){}
+Grid::Grid() : Grid(0){}
 
 /**
  * Grid::Grid(square_size)
@@ -56,7 +56,7 @@ Grid::Grid() : Grid(0,0){}
  * @param square_size
  *      The edge size to use for the width and height of the grid.
  */
-Grid::Grid(const int square_size): Grid(square_size,square_size){}
+Grid::Grid(int square_size): Grid(square_size,square_size){}
 
 /**
  * Grid::Grid(width, height)
@@ -74,7 +74,7 @@ Grid::Grid(const int square_size): Grid(square_size,square_size){}
  * @param height
  *      The height of the grid.
  */
-Grid::Grid(const int width, const int height) {
+Grid::Grid(int width, int height) {
     this->width = width;
     this->height = height;
     int size = width*height;
@@ -105,8 +105,7 @@ Grid::Grid(const int width, const int height) {
  *      The width of the grid.
  */
 int Grid::get_width() const{
-    int ref_width = this->width;
-    return ref_width;
+    return this->width;
 }
 
 
@@ -134,8 +133,7 @@ int Grid::get_width() const{
  *      The height of the grid.
  */
 int Grid::get_height() const{
-    int ref_height = this->height;
-    return ref_height;
+    return this->height;
 }
 
 /**
@@ -162,8 +160,8 @@ int Grid::get_height() const{
  *      The number of total cells.
  */
  int Grid::get_total_cells() const{
-     int size = this->grid.size();
-     return size;
+     return this->grid.size();
+//     return this->size;
  }
 
 
@@ -191,7 +189,7 @@ int Grid::get_height() const{
  *      The number of alive cells.
  */
  int Grid::get_alive_cells() const{
-     int no_alive = std::count(this->grid.begin(),this->grid.end(),Cell::ALIVE); // get alive cells
+     int no_alive = std::count(this->grid.begin(),this->grid.end(),Cell::ALIVE);
      return no_alive;
  }
 
@@ -221,7 +219,7 @@ int Grid::get_height() const{
  *      The number of dead cells.
  */
 int Grid::get_dead_cells() const{
-    int no_dead = std::count(this->grid.begin(),this->grid.end(),Cell::DEAD); // Get dead cells
+    int no_dead = std::count(this->grid.begin(),this->grid.end(),Cell::DEAD);;
     return no_dead;
 }
 
@@ -243,7 +241,7 @@ int Grid::get_dead_cells() const{
  * @param square_size
  *      The new edge size for both the width and height of the grid.
  */
-void Grid::resize(const int square_size){
+void Grid::resize(int square_size){
     resize(square_size,square_size);
 }
 
@@ -267,32 +265,39 @@ void Grid::resize(const int square_size){
  * @param new_height
  *      The new height for the grid.
  */
-void Grid::resize(const int new_width, const int new_height){
+void Grid::resize(int new_width, int new_height){
     // Dont need to resize if it is the same size
     if(new_width == this->width && new_height == this->height){return;}
     // No negative sizes
     if(new_width < 0 || new_height < 0){throw std::runtime_error("Grid::resize() : Negative sizes are not valid dimensions");}
 
     // Create a new grid
-    Grid new_grid(new_width, new_height);
+    Grid *new_grid = new Grid(new_width, new_height);
 
-    // Set x and y
-    // if (x<y) then x else y
-    int x_max = (this->width < new_width) ? this->width : new_width;
-    int y_max = (this->height < new_width) ? this->height : new_height;
+    int x_max = this->width;
+    int y_max = this->height;
 
-    // Set alive cells
+    if(new_width < x_max){
+        x_max = new_width;
+    }
+
+    if(new_height < y_max){
+        y_max = new_height;
+    }
+
     for(int y = 0; y < y_max; y++){
         for(int x = 0; x < x_max; x++){
             if(this->get(x,y) == Cell::ALIVE){
-                new_grid.set(x,y,Cell::ALIVE);
+                new_grid->set(x,y,Cell::ALIVE);
             }
         }
     }
 
-    this->grid = new_grid.grid; //copy vector
-    this->width = new_width;
-    this->height = new_height;
+    // Why you work now?????
+    this->grid = new_grid->grid;
+    this->width = new_grid->width;
+    this->height = new_grid->height;
+    delete new_grid;
 }
 
 

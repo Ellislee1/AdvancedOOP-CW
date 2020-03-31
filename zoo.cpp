@@ -161,7 +161,6 @@ Grid Zoo::load_ascii(std::string const& path) {
 
     // Check open
     if(!read){
-        read.close();
         throw std::runtime_error("Zoo::load_ascii(): Could not open file, path does not exist:" + path);
     }
 
@@ -173,7 +172,6 @@ Grid Zoo::load_ascii(std::string const& path) {
 
     // check valid size
     if (width < 0 || height < 0){
-        read.close();
         throw std::runtime_error("Zoo::load_ascii(): Error, a negative width or height was set, check file.");
     }
     read.get(); // get blank character
