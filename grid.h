@@ -36,7 +36,6 @@ private:
     std::vector<Cell> grid;
     [[nodiscard]] int get_index(int x, int y) const;
     static std::ostream &write_row(std::ostream &ostream, int width);
-    // os stream overload
     friend std::ostream& operator<<(std::ostream& output_stream, const Grid& grid);
 public:
     Grid();
@@ -59,7 +58,7 @@ public:
     Cell& operator()(int x, int y);
     const Cell& operator()(int x, int y)const;
 
-    // Manipulation functions
+    // Other Functions
     void resize(int square_size);
     void resize(int new_width, int new_height);
     [[nodiscard]] Grid crop(int x0, int y0, int x1, int y1) const;
