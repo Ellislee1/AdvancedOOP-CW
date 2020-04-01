@@ -33,7 +33,7 @@ public:
     World();
     explicit World(int square_size);
     World(int width, int height);
-    explicit World(Grid &initial_state);
+    explicit World(const Grid &initial_state);
     ~World() = default;
 
     // Getters

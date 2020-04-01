@@ -38,7 +38,7 @@
  *      World world;
  *
  */
-World::World():World(0){}
+World::World():World(0,0 ){}
 
 /**
  * World::World(square_size)
@@ -59,7 +59,7 @@ World::World():World(0){}
  * @param square_size
  *      The edge size to use for the width and height of the world.
  */
-World::World(int square_size):World(square_size, square_size){}
+World::World(const int square_size):World(square_size, square_size){}
 
 
 /**
@@ -77,9 +77,9 @@ World::World(int square_size):World(square_size, square_size){}
  * @param height
  *      The height of the world.
  */
-World::World(int width, int height){
-    this->cur_world = Grid(width,height);
-    this->next_world = Grid(width,height);
+World::World(const int width, const int height){
+    cur_world = Grid(width,height);
+    next_world = cur_world;
 }
 
 /**
@@ -101,9 +101,9 @@ World::World(int width, int height){
  * @param initial_state
  *      The state of the constructed world.
  */
-World::World(Grid &initial_state){
-    this->cur_world = initial_state;
-    this->next_world = Grid(this->cur_world.get_width(), this->cur_world.get_height());
+World::World(const Grid &initial_state){
+    cur_world = initial_state;
+    next_world = cur_world;
 }
 
 /**
@@ -130,7 +130,7 @@ World::World(Grid &initial_state){
  *      The width of the world.
  */
 int World::get_width() const {
-    int width = this->cur_world.get_width();
+    const int width = cur_world.get_width();
     return width;
 }
 
