@@ -158,7 +158,7 @@ int World::get_width() const {
  *      The height of the world.
  */
 int World::get_height() const {
-    int height = this->cur_world.get_height();
+    const int height = cur_world.get_height();
     return height;
 }
 
@@ -186,7 +186,7 @@ int World::get_height() const {
  *      The number of total cells.
  */
 int World::get_total_cells() const {
-    int total_cells = this->cur_world.get_total_cells();
+    const int total_cells = cur_world.get_total_cells();
     return total_cells;
 }
 
@@ -214,7 +214,7 @@ int World::get_total_cells() const {
  *      The number of alive cells.
  */
 int World::get_alive_cells() const {
-    int alive_cells = this->cur_world.get_alive_cells();
+    const int alive_cells = cur_world.get_alive_cells();
     return alive_cells;
 }
 
@@ -242,7 +242,7 @@ int World::get_alive_cells() const {
  *      The number of dead cells.
  */
 int World::get_dead_cells() const {
-    int dead_cells = (this->cur_world).get_dead_cells();
+    const int dead_cells = cur_world.get_dead_cells();
     return dead_cells;
 }
 
@@ -270,8 +270,8 @@ int World::get_dead_cells() const {
  * @return
  *      A reference to the current state.
  */
-Grid& World::get_state() const {
-    return (Grid &)(this->cur_world);
+const Grid& World::get_state() const {
+    return cur_world;
 }
 
 /**
@@ -293,7 +293,7 @@ Grid& World::get_state() const {
  * @param square_size
  *      The new edge size for both the width and height of the grid.
  */
-void World::resize(int square_size){
+void World::resize(const int square_size){
     World::resize(square_size, square_size);
 }
 
@@ -319,8 +319,8 @@ void World::resize(int square_size){
  * @param new_height
  *      The new height for the grid.
  */
-void World::resize(int width, int height){
-    this->cur_world.resize(width, height);
+void World::resize(const int width, const int height){
+    cur_world.resize(width, height);
 }
 
 /**
@@ -354,9 +354,10 @@ void World::resize(int width, int height){
  * @return
  *      Returns the number of alive neighbours.
  */
-int World::count_neighbours(int x, int y, bool toroidal) const{
-    int width = this->get_width(); // Get width to save computation
-    int height = this->get_height(); // Get height to save computation
+int World::count_neighbours(const int x, const int y, const bool toroidal) const{
+    const int width = get_width(); // Get width to save computation
+    const int height = get_height(); // Get height to save computation
+
     int alive = 0; // Count number of alive cells
 
     // See if the centre point is alive.
@@ -364,20 +365,6 @@ int World::count_neighbours(int x, int y, bool toroidal) const{
     if (this->cur_world.get(x,y) == Cell::ALIVE){
         pos_centre = true;
     }
-//    std::cout << pos_centre << std::endl;
-//
-//    // If all bounds are within the grid count alive in a cropped version of the grid.
-//    if ((x-1 >=0 && y-1 >=0) && (x+1 <= width && y+1 <= height)){
-//        Grid cropped = this->cur_world.crop(x-1,y-1,x+1,y+1);
-//        alive = cropped.get_alive_cells();
-//
-//        // reduce count by 1
-//        if(pos_centre && alive > 0){
-//            alive--;
-//        }
-//
-//        return alive;
-//    }
 
     if(!toroidal){
         for(int y_pos=y-1; y_pos<=y+1; y_pos++){
@@ -401,6 +388,7 @@ int World::count_neighbours(int x, int y, bool toroidal) const{
             } else if (use_y < 0) {
                 use_y = height-1;
             }
+            
             for(int x_pos=x-1; x_pos<=x+1; x_pos++){
                 int use_x;
                 use_x = x_pos;
