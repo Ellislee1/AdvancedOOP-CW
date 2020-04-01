@@ -105,7 +105,7 @@ Grid::Grid(const int width, const int height) {
  *      The width of the grid.
  */
 int Grid::get_width() const{
-    int var_width = this->width; // Get the width
+    int var_width = width; // Get the width
     return var_width;
 }
 
@@ -134,7 +134,7 @@ int Grid::get_width() const{
  *      The height of the grid.
  */
 int Grid::get_height() const{
-    int var_height = this->height; // get the height
+    int var_height = height; // get the height
     return var_height;
 }
 
@@ -163,7 +163,7 @@ int Grid::get_height() const{
  */
  int Grid::get_total_cells() const{
      // The size is how many cells are in the vector.
-     int size = this->grid.size(); // Get the size
+     int size = grid.size(); // Get the size
      return size;
  }
 
@@ -192,7 +192,7 @@ int Grid::get_height() const{
  *      The number of alive cells.
  */
  int Grid::get_alive_cells() const{
-     int no_alive = std::count(this->grid.begin(),this->grid.end(),Cell::ALIVE);
+     int no_alive = std::count(grid.begin(),grid.end(),Cell::ALIVE);
      return no_alive;
  }
 
@@ -222,7 +222,7 @@ int Grid::get_height() const{
  *      The number of dead cells.
  */
 int Grid::get_dead_cells() const{
-    int no_dead = std::count(this->grid.begin(),this->grid.end(),Cell::DEAD);
+    int no_dead = std::count(grid.begin(),grid.end(),Cell::DEAD);
     return no_dead;
 }
 
@@ -270,7 +270,7 @@ void Grid::resize(const int square_size){
  */
 void Grid::resize(const int new_width,const int new_height){
     // Dont need to resize if it is the same size
-    if(new_width == this->width && new_height == this->height){return;}
+    if(new_width == width && new_height == height){return;}
     // No negative sizes
     if(new_width < 0 || new_height < 0){throw std::runtime_error("Grid::resize() : Negative sizes are not valid dimensions");}
 
@@ -278,22 +278,22 @@ void Grid::resize(const int new_width,const int new_height){
     Grid new_grid(new_width, new_height);
 
     // Set the maximum x and y to the smallest of the widths and heights respectively
-    int x_max = (this->width > new_width) ? new_width : this->width;
-    int y_max = (this->height > new_height) ? new_height : this->height;
+    int x_max = (width > new_width) ? new_width : width;
+    int y_max = (height > new_height) ? new_height : height;
 
 
     for(int y = 0; y < y_max; y++){
         for(int x = 0; x < x_max; x++){
-            if(this->get(x,y) == Cell::ALIVE){
+            if(get(x,y) == Cell::ALIVE){
                 new_grid.set(x,y,Cell::ALIVE);
             }
         }
     }
 
     // Replace the grid, width and heights.
-    this->grid = new_grid.grid;
-    this->width = new_grid.width;
-    this->height = new_grid.height;
+    grid = new_grid.grid;
+    width = new_grid.width;
+    height = new_grid.height;
 }
 
 
@@ -314,7 +314,7 @@ void Grid::resize(const int new_width,const int new_height){
  *      The 1d offset from the start of the data array where the desired cell is located.
  */
 int Grid::get_index(const int x, const int y) const{
-    int offset = y * this->width;
+    int offset = y * width;
     return offset + x;
 }
 
@@ -347,20 +347,20 @@ int Grid::get_index(const int x, const int y) const{
  * @throws
  *      std::exception or sub-class if x,y is not a valid coordinate within the grid.
  */
-Cell Grid::get(int x, int y) const{
-    if (x > (this->width)-1 || y > (this->height)-1){
+Cell Grid::get(const int x, const int y) const{
+    // Check that the values aren't out of bounds
+    if (x > (width)-1 || y > (height)-1){
         throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
-
+    // Check that the values aren't negative
     if (x < 0 || y < 0){
         throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
 
     int index = this->get_index(x, y);
-    if (this->grid[index] == Cell::ALIVE){
-        return Cell::ALIVE;
-    }
-    return Cell::DEAD;
+
+    // If the value is alive return alive otherwise dead.
+    return (grid.at(index) == Cell::ALIVE) ? Cell::ALIVE : Cell::DEAD;
 
 }
 
@@ -392,14 +392,15 @@ Cell Grid::get(int x, int y) const{
  *      std::exception or sub-class if x,y is not a valid coordinate within the grid.
  */
 void Grid::set(const int x, const int y, const Cell value) {
-    if (x > this->width || y > this->height){
-        throw std::runtime_error("Grid::set() : Not a valid grid coordinate");
+    // Check that the values aren't out of bounds
+    if (x > width || y > height){
+        throw std::runtime_error("Grid::set() : Not a valid grid coordinate, too high");
     }
-
+    // Check that the values aren't out of bounds
     if (x < 0 || y < 0){
-        throw std::runtime_error("Grid::set() : Not a valid grid coordinate");
+        throw std::runtime_error("Grid::set() : Not a valid grid coordinate, too low");
     }
-
+    // Check that the values aren't out of bounds
     int index = get_index(x, y);
     grid[index] = value;
 }
@@ -440,15 +441,20 @@ void Grid::set(const int x, const int y, const Cell value) {
  * @throws
  *      std::runtime_error or sub-class if x,y is not a valid coordinate within the grid.
  */
-Cell& Grid::operator()(int x, int y) {
-    if (x > this->width || y > this->height){
+Cell& Grid::operator()(const int x, const int y) {
+    // Check that the values aren't out of bounds
+    if (x > width || y > height){
         throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
+    // Check that the values aren't out of bounds
     if(x < 0 || y< 0){
         throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
+
+    // Get index and return reference
     int index = get_index(x, y);
-    return (this->grid[index]);
+    Cell & cell = grid.at(index);
+    return cell;
 }
 
 
@@ -482,16 +488,21 @@ Cell& Grid::operator()(int x, int y) {
  * @throws
  *      std::exception or sub-class if x,y is not a valid coordinate within the grid.
  */
-const Cell& Grid::operator()(int x, int y) const {
-    if (x > this->width || y > this->height){
+const Cell & Grid::operator()(const int x, const int y) const {
+    // Check that the values aren't out of bounds
+    if (x > width || y > height){
         throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
+    // Check that the values aren't out of bounds
 
     if(x < 0 || y< 0){
         throw std::runtime_error("Grid::operator() : Not a valid grid coordinate");
     }
+
+    // Get index and return reference
     int index = get_index(x, y);
-    return this->grid[index];
+    const Cell & cell = grid.at(index);
+    return cell;
 }
 
 
