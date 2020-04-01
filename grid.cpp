@@ -77,7 +77,7 @@ Grid::Grid(const int square_size): Grid(square_size,square_size){} // Call gird 
 Grid::Grid(const int width, const int height) {
     this->width = width;
     this->height = height;
-    int size = width*height;
+    const int size = width*height;
     this->grid = std::vector<Cell>(size, Cell::DEAD);
 }
 
@@ -105,7 +105,7 @@ Grid::Grid(const int width, const int height) {
  *      The width of the grid.
  */
 int Grid::get_width() const{
-    int var_width = width; // Get the width
+    const int var_width = width; // Get the width
     return var_width;
 }
 
@@ -134,7 +134,7 @@ int Grid::get_width() const{
  *      The height of the grid.
  */
 int Grid::get_height() const{
-    int var_height = height; // get the height
+    const int var_height = height; // get the height
     return var_height;
 }
 
@@ -163,7 +163,7 @@ int Grid::get_height() const{
  */
  int Grid::get_total_cells() const{
      // The size is how many cells are in the vector.
-     int size = grid.size(); // Get the size
+     const int size = grid.size(); // Get the size
      return size;
  }
 
@@ -192,7 +192,7 @@ int Grid::get_height() const{
  *      The number of alive cells.
  */
  int Grid::get_alive_cells() const{
-     int no_alive = std::count(grid.begin(),grid.end(),Cell::ALIVE);
+     const int no_alive = std::count(grid.begin(),grid.end(),Cell::ALIVE);
      return no_alive;
  }
 
@@ -222,7 +222,7 @@ int Grid::get_height() const{
  *      The number of dead cells.
  */
 int Grid::get_dead_cells() const{
-    int no_dead = std::count(grid.begin(),grid.end(),Cell::DEAD);
+    const int no_dead = std::count(grid.begin(),grid.end(),Cell::DEAD);
     return no_dead;
 }
 
@@ -278,8 +278,8 @@ void Grid::resize(const int new_width,const int new_height){
     Grid new_grid(new_width, new_height);
 
     // Set the maximum x and y to the smallest of the widths and heights respectively
-    int x_max = (width > new_width) ? new_width : width;
-    int y_max = (height > new_height) ? new_height : height;
+    const int x_max = (width > new_width) ? new_width : width;
+    const int y_max = (height > new_height) ? new_height : height;
 
 
     for(int y = 0; y < y_max; y++){
@@ -314,7 +314,7 @@ void Grid::resize(const int new_width,const int new_height){
  *      The 1d offset from the start of the data array where the desired cell is located.
  */
 int Grid::get_index(const int x, const int y) const{
-    int offset = y * width;
+    const int offset = y * width;
     return offset + x;
 }
 
@@ -357,7 +357,7 @@ Cell Grid::get(const int x, const int y) const{
         throw std::runtime_error("Grid::get() : Not a valid grid coordinate");
     }
 
-    int index = this->get_index(x, y);
+    const int index = get_index(x, y);
 
     // If the value is alive return alive otherwise dead.
     return (grid.at(index) == Cell::ALIVE) ? Cell::ALIVE : Cell::DEAD;
@@ -401,7 +401,7 @@ void Grid::set(const int x, const int y, const Cell value) {
         throw std::runtime_error("Grid::set() : Not a valid grid coordinate, too low");
     }
     // Check that the values aren't out of bounds
-    int index = get_index(x, y);
+    const int index = get_index(x, y);
     grid[index] = value;
 }
 
@@ -452,7 +452,7 @@ Cell& Grid::operator()(const int x, const int y) {
     }
 
     // Get index and return reference
-    int index = get_index(x, y);
+    const int index = get_index(x, y);
     Cell & cell = grid.at(index);
     return cell;
 }
@@ -500,7 +500,7 @@ const Cell & Grid::operator()(const int x, const int y) const {
     }
 
     // Get index and return reference
-    int index = get_index(x, y);
+    const int index = get_index(x, y);
     const Cell & cell = grid.at(index);
     return cell;
 }
@@ -540,9 +540,9 @@ const Cell & Grid::operator()(const int x, const int y) const {
  *      std::exception or sub-class if x0,y0 or x1,y1 are not valid coordinates within the grid
  *      or if the crop window has a negative size.
  */
-Grid Grid::crop(int x0, int y0, int x1, int y1) const{
+Grid Grid::crop(const int x0, const int y0, const int x1, const int y1) const{
     // Handle invalid sizes
-    if ((x0 || x1 )> this->width || (y0 || y1) > this->height){
+    if ((x0 || x1 )> width || (y0 || y1) > height){
         throw std::runtime_error("Grid::crop() : Not a valid grid coordinate");
     }
     if (x0 < 0 || x1 < 0 || y1 < 0 || y0 < 0){
@@ -554,21 +554,24 @@ Grid Grid::crop(int x0, int y0, int x1, int y1) const{
         throw std::runtime_error("Grid::crop() : Invalid x/y bounds");
     }
 
-    int new_width = x1-x0;
-    int new_height = y1-y0;
+    // Get the new width and height of the cropped grid
+    const int new_width = x1-x0;
+    const int new_height = y1-y0;
 
+    // Create cropped grid
     Grid crop_grid(new_width,new_height);
 
+    // Set the alive vars in the cropped grid
     for(int y = y0; y < y1; y++){
         for(int x = x0; x < x1; x++){
-            if(this->get(x,y) == Cell::ALIVE){
+            if(get(x,y) == Cell::ALIVE){
                 crop_grid.set(x-x0,y-y0,Cell::ALIVE);
             }
         }
     }
 
+    // Return grid
     return crop_grid;
-
 }
 
 
@@ -609,15 +612,18 @@ Grid Grid::crop(int x0, int y0, int x1, int y1) const{
  * @throws
  *      std::exception or sub-class if the other grid being placed does not fit within the bounds of the current grid.
  */
-void Grid::merge(const Grid &other, int x0, int y0, bool alive_only){
-    int other_size = other.width * other.height;
-    int this_size = this->width * this->height;
+void Grid::merge(const Grid & other, const int x0, const int y0, const bool alive_only){
+    // kept this-> in to make identifying them easier.
+
+    //Get sizes
+    const int other_size = other.get_total_cells();
+    const int this_size = get_total_cells();
 
     if(other_size > this_size){
         throw std::runtime_error("Grid::Merge() : The grid is out of bounds");
     }
 
-    if (((x0 + (other.width)) > this->width) || ((y0 + (other.height)) > this->height)){
+    if (((x0 + (other.get_width())) > this->width) || ((y0 + (other.get_height())) > this->height)){
         throw std::runtime_error("Grid::Merge() : The grid is out of bounds");
     }
 
@@ -625,16 +631,19 @@ void Grid::merge(const Grid &other, int x0, int y0, bool alive_only){
         throw std::runtime_error("Grid::Merge() : Invalid position");
     }
 
-    for (int y = 0; y < other.height; y++){
-        for (int x = 0; x < other.width; x++){
-            Cell state = other.get(x,y);
+    for (int y = 0; y < other.get_height(); y++){
+        for (int x = 0; x < other.get_width(); x++){
+            const Cell state = other.get(x,y);
+
             if(alive_only){
-                if(state == Cell::ALIVE){
+                if(state == Cell::ALIVE){ // Check to see if the cell is alive
                     this->set(x+x0,y+y0,state);
                 }
             } else {
+                // Set the value to match no matter what
                 this->set(x+x0,y+y0,state);
             }
+
         }
     }
 }
@@ -730,28 +739,45 @@ Grid Grid::rotate(int rotation)const{
  * @return
  *      Returns a reference to the output stream to enable operator chaining.
  */
-std::ostream& operator<<(std::ostream& output_stream, Grid &grid) {
-    output_stream << '+';
-    for(int i=0; i< grid.get_width(); i++){
-        output_stream << '-';
-    }
-    output_stream << '+'<< std::endl;
+std::ostream& operator<<(std::ostream& output_stream,const Grid &grid){
+    // Write row
+    Grid::write_row(output_stream, grid.get_width());
 
+    // Write bulk of grid
     for (int y = 0; y < grid.get_height(); y++){
         output_stream << '|';
         for(int x = 0; x < grid.get_width(); x++){
+
             if (grid.get(x,y) == Cell::ALIVE){
                 output_stream << '#';
             } else {
                 output_stream << ' ';
             }
+
         }
         output_stream << '|'<< std::endl;
     }
-    output_stream << '+';
-    for(int i=0; i< grid.get_width(); i++){
-        output_stream << '-';
-    }
-    output_stream << '+'<< std::endl;
+
+    Grid::write_row(output_stream, grid.get_width());
     return output_stream;
+}
+
+/**
+ * Write a rot of +'s and -'s
+ * @param ostream
+ *      An ascii mode output stream such as std::cout.
+ * @param length
+ *      The number of -'s to write
+ * @return
+ *      Returns the modified os stream
+ */
+std::ostream &Grid::write_row(std::ostream &ostream, const int length) {
+    ostream << '+';
+
+    for(int i=0; i< length; i++){
+        ostream << '-';
+    }
+    ostream << '+'<< std::endl;
+
+    return ostream;
 }

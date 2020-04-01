@@ -35,7 +35,8 @@ private:
     int height;
     std::vector<Cell> grid;
     [[nodiscard]] int get_index(int x, int y) const;
-    friend std::ostream& operator<<(std::ostream& output_stream, Grid& grid);
+    static std::ostream &write_row(std::ostream &ostream, int width);
+    friend std::ostream& operator<<(std::ostream& output_stream, const Grid& grid);
 public:
     Grid();
     explicit Grid(int square_size);
