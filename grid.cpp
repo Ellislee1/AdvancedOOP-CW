@@ -11,13 +11,13 @@
  * @author 951536
  * @date March, 2020
  */
+
+// Include the minimal number of headers needed to support your implementation.
+// #include ...
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include "grid.h"
-
-// Include the minimal number of headers needed to support your implementation.
-// #include ...
 
 /**
  * Grid::Grid()
@@ -31,7 +31,7 @@
  *      Grid grid;
  *
  */
-Grid::Grid() : Grid(0){}
+Grid::Grid() : Grid(0,0){} // Default constructor, call grid with width and height set to 0
 
 /**
  * Grid::Grid(square_size)
@@ -56,7 +56,7 @@ Grid::Grid() : Grid(0){}
  * @param square_size
  *      The edge size to use for the width and height of the grid.
  */
-Grid::Grid(int square_size): Grid(square_size,square_size){}
+Grid::Grid(const int square_size): Grid(square_size,square_size){} // Call gird with and height the same
 
 /**
  * Grid::Grid(width, height)
@@ -74,7 +74,7 @@ Grid::Grid(int square_size): Grid(square_size,square_size){}
  * @param height
  *      The height of the grid.
  */
-Grid::Grid(int width, int height) {
+Grid::Grid(const int width, const int height) {
     this->width = width;
     this->height = height;
     int size = width*height;
@@ -105,7 +105,8 @@ Grid::Grid(int width, int height) {
  *      The width of the grid.
  */
 int Grid::get_width() const{
-    return this->width;
+    int var_width = this->width; // Get the width
+    return var_width;
 }
 
 
@@ -133,7 +134,8 @@ int Grid::get_width() const{
  *      The height of the grid.
  */
 int Grid::get_height() const{
-    return this->height;
+    int var_height = this->height; // get the height
+    return var_height;
 }
 
 /**
@@ -160,8 +162,9 @@ int Grid::get_height() const{
  *      The number of total cells.
  */
  int Grid::get_total_cells() const{
-     return this->grid.size();
-//     return this->size;
+     // The size is how many cells are in the vector.
+     int size = this->grid.size(); // Get the size
+     return size;
  }
 
 
@@ -219,7 +222,7 @@ int Grid::get_height() const{
  *      The number of dead cells.
  */
 int Grid::get_dead_cells() const{
-    int no_dead = std::count(this->grid.begin(),this->grid.end(),Cell::DEAD);;
+    int no_dead = std::count(this->grid.begin(),this->grid.end(),Cell::DEAD);
     return no_dead;
 }
 
@@ -241,7 +244,7 @@ int Grid::get_dead_cells() const{
  * @param square_size
  *      The new edge size for both the width and height of the grid.
  */
-void Grid::resize(int square_size){
+void Grid::resize(const int square_size){
     resize(square_size,square_size);
 }
 
@@ -265,39 +268,32 @@ void Grid::resize(int square_size){
  * @param new_height
  *      The new height for the grid.
  */
-void Grid::resize(int new_width, int new_height){
+void Grid::resize(const int new_width,const int new_height){
     // Dont need to resize if it is the same size
     if(new_width == this->width && new_height == this->height){return;}
     // No negative sizes
     if(new_width < 0 || new_height < 0){throw std::runtime_error("Grid::resize() : Negative sizes are not valid dimensions");}
 
     // Create a new grid
-    Grid *new_grid = new Grid(new_width, new_height);
+    Grid new_grid(new_width, new_height);
 
-    int x_max = this->width;
-    int y_max = this->height;
+    // Set the maximum x and y to the smallest of the widths and heights respectively
+    int x_max = (this->width > new_width) ? new_width : this->width;
+    int y_max = (this->height > new_height) ? new_height : this->height;
 
-    if(new_width < x_max){
-        x_max = new_width;
-    }
-
-    if(new_height < y_max){
-        y_max = new_height;
-    }
 
     for(int y = 0; y < y_max; y++){
         for(int x = 0; x < x_max; x++){
             if(this->get(x,y) == Cell::ALIVE){
-                new_grid->set(x,y,Cell::ALIVE);
+                new_grid.set(x,y,Cell::ALIVE);
             }
         }
     }
 
-    // Why you work now?????
-    this->grid = new_grid->grid;
-    this->width = new_grid->width;
-    this->height = new_grid->height;
-    delete new_grid;
+    // Replace the grid, width and heights.
+    this->grid = new_grid.grid;
+    this->width = new_grid.width;
+    this->height = new_grid.height;
 }
 
 
@@ -317,9 +313,9 @@ void Grid::resize(int new_width, int new_height){
  * @return
  *      The 1d offset from the start of the data array where the desired cell is located.
  */
-int Grid::get_index(int x, int y) const{
-    int y_offset = y * this->width;
-    return y_offset + x;
+int Grid::get_index(const int x, const int y) const{
+    int offset = y * this->width;
+    return offset + x;
 }
 
 
