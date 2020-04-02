@@ -156,22 +156,22 @@ Grid Zoo::light_weight_spaceship(){
  */
 Grid Zoo::load_ascii(std::string const& path) {
     // open
-    std::ifstream read;
-    read.open(path);
+    std::ifstream read(path, std::ofstream::in);
 
     // Check open
     if(!read){
+        read.close();
         throw std::runtime_error("Zoo::load_ascii(): Could not open file, path does not exist:" + path);
     }
 
-    char c = read.get();
-    int width = c-'0'; // Get int value
+    char c;
+    int width = read.get()-'0'; // Get int value
     read.get();
-    c = read.get();
-    int height = c-'0';
+    int height = read.get()-'0';
 
     // check valid size
     if (width < 0 || height < 0){
+        read.close();
         throw std::runtime_error("Zoo::load_ascii(): Error, a negative width or height was set, check file.");
     }
     read.get(); // get blank character
@@ -240,6 +240,7 @@ void Zoo::save_ascii(const std::string& path, const Grid& grid){
     std::ofstream write(path, std::ofstream::out);
     // fail if not opened
     if(!write){
+        write.close();
         throw std::runtime_error("Zoo::save_ascii(): Could not open file, path does not exist:" + path);
     }
 
@@ -255,9 +256,12 @@ void Zoo::save_ascii(const std::string& path, const Grid& grid){
         for (int x = 0; x<width; x++){
             if(grid.get(x,y) == Cell::ALIVE){
                 write << "#";
-            } else {write << " ";}
+            } else {
+                write << " ";
+            }
 
         }
+
         write << std::endl;
     }
 
@@ -290,25 +294,24 @@ void Zoo::save_ascii(const std::string& path, const Grid& grid){
  */
 Grid Zoo::load_binary(const std::string& path){
     // open file
-    std::ifstream in;
-    in.open(path, std::ios::binary | std::ios::in);
+    std::ifstream read(path, std::ios::binary | std::ios::in);
 
     // check file was opened
-    if(!in){
-        in.close();
+    if(!read){
+        read.close();
         throw std::runtime_error("Zoo::load_binary(): Could not open file, path does not exist:" + path);
     }
 
     // work out size of file
-    const int start = in.tellg();
-    in.seekg(0,std::ios::end);
-    const int end = in.tellg();
+    const int start = read.tellg();
+    read.seekg(0,std::ios::end);
+    const int end = read.tellg();
     const int size = end - start;
-    in.seekg(0,std::ios::beg);
+    read.seekg(0,std::ios::beg);
 
     // if the size of the file is less than the required 8 bytes file is too short.
     if(size < 8){
-        in.close();
+        read.close();
         throw std::runtime_error("Zoo::load_binary(): Unexpected end of file");
     }
 
@@ -317,21 +320,21 @@ Grid Zoo::load_binary(const std::string& path){
     int height;
 
     // Read the width and heights
-    in.read((char *) &width, 4);
-    in.read((char *) &height, 4);
+    read.read((char *) &width, 4);
+    read.read((char *) &height, 4);
 
     // bytes remaining
-    int remainder = std::ceil((width * height)/8);
+    const int remainder = std::ceil((width * height)/8);
     // Check enough bytes exist in the file
     if (size - 8 < remainder){
-        in.close();
+        read.close();
         throw std::runtime_error("Zoo::load_binary(): Unexpected end of file");
     }
     int bit_grid;
     // Read bytes into the bit grid
-    in.read((char *)&bit_grid, (size - 8));
+    read.read((char *)&bit_grid, (size - 8));
     // Close the file
-    in.close();
+    read.close();
     // Make the grid
     Grid grid(width, height);
 
@@ -380,8 +383,8 @@ Grid Zoo::load_binary(const std::string& path){
 */
 void Zoo::save_binary(const std::string& path, const Grid& grid) {
     // Get width and height
-    int width = grid.get_width();
-    int height = grid.get_height();
+    const int width = grid.get_width();
+    const int height = grid.get_height();
 
     // The total required bits
     int required = width * height;
@@ -390,21 +393,21 @@ void Zoo::save_binary(const std::string& path, const Grid& grid) {
     if (required%8 != 0){
         required += (8-(required%8));
     }
+
     required = required/8;
 
     // of stream
-    std::ofstream out;
-    out.open(path, std::ios::binary | std::ios::out);
+    std::ofstream write(path, std::ios::binary | std::ios::out);
 
     // Check file was opened
-    if(!out){
-        out.close();
+    if(!write){
+        write.close();
         throw std::runtime_error("Zoo::save_binary(): Could not open file, path does not exist:" + path);
     }
 
     // Write the 4byte size
-    out.write((char*)&width, 4);
-    out.write((char*)&height, 4);
+    write.write((char*)&width, 4);
+    write.write((char*)&height, 4);
 
     // set the bit grid
     int bit_grid = 0;
@@ -424,7 +427,7 @@ void Zoo::save_binary(const std::string& path, const Grid& grid) {
             // If we reach the size of the integer
             if (counter > 32){
                 // write the integer as bits
-                out.write((char*)&bit_grid, sizeof(int));
+                write.write((char*)&bit_grid, sizeof(int));
                 // reset vars
                 counter = 0;
                 bit_grid = 0;
@@ -436,9 +439,9 @@ void Zoo::save_binary(const std::string& path, const Grid& grid) {
 
     // Write remaining bytes
     if(tracker != required/8) {
-        out.write((char *) &bit_grid, required - tracker);
+        write.write((char *) &bit_grid, required - tracker);
     }
     // Close the stream.
-    out.close();
+    write.close();
 
 }
