@@ -385,7 +385,7 @@ Cell Grid::get(const int x, const int y) const{
  * @throws
  *      std::exception or sub-class if x,y is not a valid coordinate within the grid.
  */
-void Grid::set(const int x, const int y, const Cell value) {
+void Grid::set(const int x, const int y, Cell value) {
     // Check that the values aren't out of bounds
     if (x > width || y > height){
         throw std::runtime_error("Grid::set() : Not a valid grid coordinate, too high");

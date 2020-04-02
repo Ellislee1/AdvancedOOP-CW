@@ -361,15 +361,12 @@ int World::count_neighbours(const int x, const int y, const bool toroidal) const
     int alive = 0; // Count number of alive cells
 
     // See if the centre point is alive.
-    bool pos_centre = false;
-    if (this->cur_world.get(x,y) == Cell::ALIVE){
-        pos_centre = true;
-    }
+    const bool pos_centre = (cur_world.get(x, y) == Cell::ALIVE);
 
     if(!toroidal){
         for(int y_pos=y-1; y_pos<=y+1; y_pos++){
             for(int x_pos=x-1; x_pos<=x+1; x_pos++){
-                try{
+                try{ // We expect this to happen if it tries to go out of bounds.
                     if(this->cur_world.get(x_pos,y_pos) == Cell::ALIVE){
                         alive++;
                     }
