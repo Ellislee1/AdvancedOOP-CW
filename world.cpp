@@ -321,6 +321,7 @@ void World::resize(const int square_size){
  */
 void World::resize(const int width, const int height){
     cur_world.resize(width, height);
+    next_world.resize(width,height);
 }
 
 /**
@@ -364,10 +365,11 @@ int World::count_neighbours(const int x, const int y, const bool toroidal) const
     const bool pos_centre = (cur_world.get(x, y) == Cell::ALIVE);
 
     if(!toroidal){
+        // Normal game
         for(int y_pos=y-1; y_pos<=y+1; y_pos++){
             for(int x_pos=x-1; x_pos<=x+1; x_pos++){
                 try{ // We expect this to happen if it tries to go out of bounds.
-                    if(this->cur_world.get(x_pos,y_pos) == Cell::ALIVE){
+                    if(cur_world.get(x_pos,y_pos) == Cell::ALIVE){
                         alive++;
                     }
                 } catch (std::runtime_error &ex){
@@ -375,7 +377,9 @@ int World::count_neighbours(const int x, const int y, const bool toroidal) const
                 }
             }
         }
+
     } else {
+        // T game (the world wraps around)
         for(int y_pos=y-1; y_pos<=y+1; y_pos++){
             int use_y;
             use_y = y_pos;
@@ -395,13 +399,15 @@ int World::count_neighbours(const int x, const int y, const bool toroidal) const
                 } else if (use_x < 0) {
                     use_x = width-1;
                 }
-                if(this->cur_world.get(use_x,use_y) == Cell::ALIVE){
+
+                if(cur_world.get(use_x,use_y) == Cell::ALIVE){
                     alive++;
                 }
             }
         }
     }
 
+    // As this method counts the centre cell its easier to just remove it at the end if it is alive.
     if(pos_centre && alive > 0){
         alive--;
     }
@@ -431,22 +437,24 @@ int World::count_neighbours(const int x, const int y, const bool toroidal) const
  *      wraps to the right edge and the top to the bottom. Defaults to false.
  */
 void World::step(bool toroidal){
-    int width = this->get_width(); // Get width to save computation
-    int height = this->get_height(); // Get height to save computation
+    int width = get_width(); // Get width to save computation
+    int height = get_height(); // Get height to save computation
 
     for (int y = 0; y<height; y++){
         for (int x = 0; x<width; x++) {
-            if (this->count_neighbours(x, y, toroidal) < 2 || this->count_neighbours(x, y, toroidal) > 3) {
-                this->next_world.set(x, y, Cell::DEAD);
-            } else if (this->count_neighbours(x, y, toroidal) == 3) {
-                this->next_world.set(x, y, Cell::ALIVE);
-            } else if (this->count_neighbours(x, y, toroidal) == 2 && this->cur_world.get(x, y) == Cell::ALIVE) {
-                this->next_world.set(x, y, Cell::ALIVE);
-            } else {this->next_world.set(x, y, Cell::DEAD);}
+            if (count_neighbours(x, y, toroidal) < 2 || count_neighbours(x, y, toroidal) > 3) { // Case 1
+                next_world.set(x, y, Cell::DEAD);
+            } else if (count_neighbours(x, y, toroidal) == 3) { // Case 4 & 2
+                next_world.set(x, y, Cell::ALIVE);
+            } else if (count_neighbours(x, y, toroidal) == 2 && cur_world.get(x, y) == Cell::ALIVE) { // Case 2
+                next_world.set(x, y, Cell::ALIVE);
+            } else {
+                next_world.set(x, y, Cell::DEAD);
+            }
         }
     }
 
-    std::swap(this->cur_world, this->next_world);
+    std::swap(cur_world, next_world);
 }
 
 /**

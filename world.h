@@ -22,14 +22,15 @@
  *      - These buffers should be swapped using std::swap after each update step.
  */
 class World {
-private:
     // How to draw an owl:
     //      Step 1. Draw a circle.
     //      Step 2. Draw the rest of the owl.
-    Grid cur_world;
-    Grid next_world;
+private:
+    Grid cur_world; // Current world
+    Grid next_world; // Next world
     [[nodiscard]] int count_neighbours(int x, int y, bool toroidal) const;
 public:
+    // Constructors & destructors
     World();
     explicit World(int square_size);
     World(int width, int height);
@@ -44,7 +45,7 @@ public:
     [[nodiscard]] int get_dead_cells() const;
     [[nodiscard]] const Grid& get_state() const;
 
-    // Others
+    // Manipulation
     void resize(int square_size);
     void resize(int width, int height);
 
