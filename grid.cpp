@@ -282,13 +282,7 @@ void Grid::resize(const int new_width,const int new_height){
     const int y_max = (height > new_height) ? new_height : height;
 
 
-    for(int y = 0; y < y_max; y++){
-        for(int x = 0; x < x_max; x++){
-            if(get(x,y) == Cell::ALIVE){
-                new_grid.set(x,y,Cell::ALIVE);
-            }
-        }
-    }
+    new_grid.merge(this->crop(0,0,x_max,y_max),0,0,true);
 
     // Replace the grid, width and heights.
     grid = new_grid.grid;
@@ -637,7 +631,7 @@ void Grid::merge(const Grid & other, const int x0, const int y0, const bool aliv
 
             if(alive_only){
                 if(state == Cell::ALIVE){ // Check to see if the cell is alive
-                    this->set(x+x0,y+y0,state);
+                    this->set(x+x0,y+y0,Cell::ALIVE);
                 }
             } else {
                 // Set the value to match no matter what
